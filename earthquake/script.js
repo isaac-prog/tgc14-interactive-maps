@@ -1,3 +1,17 @@
+async function getEarthquakeCoordinates(map) {
+    let response = await axios.get('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson');
+    let coordinates = response.data.features[0].geometry.coordinates;
+    let cluster = L.markerClusterGroup();
+    cluster.addTo(map);
+    for (let earthquake of coordinates) {
+        let lng = earthquake[0];
+        let lat = earthquake[1]
+        let actualCoordinate = [ lat, lng];
+        let marker = L.marker(actualCoordinate);
+        marker.addTo(cluster);
+    }
+}
+
 // Leaflet, coordinates are represented by an array of 2 elements
 // [ <lat>, <lng> ]
 let singapore = [1.29, 103.85];
@@ -5,7 +19,7 @@ let singapore = [1.29, 103.85];
 let map = L.map('map'); // create a map and render it to the #map
 map.setView(singapore, 13);
 
-L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoieWl6aGVnYW4xOTk5IiwiYSI6ImNrb3hyc3J2aDAzaXgyb2trN3AycGhsOWkifQ.1cjx5absolRcCGBgaajnDA', {
+L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
     id: 'mapbox/streets-v11',
@@ -14,3 +28,4 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     accessToken: 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw' //demo access token
 }).addTo(map);
 
+getEarthquakeCoordinates(map);
